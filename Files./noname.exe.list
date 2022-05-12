@@ -1,0 +1,551 @@
+EMU8086 GENERATED LISTING. MACHINE CODE <- SOURCE.
+ 
+noname.exe -- emu8086 assembler version: 4.08  
+ 
+[ 5/6/2022  --  10:30:05 AM ] 
+ 
+===================================================================================================
+[LINE]     LOC: MACHINE CODE                          SOURCE
+===================================================================================================
+ 
+[   1]        :                                       .model small
+[   2]        :                                       .stack 100h
+[   3]        :                                       .data
+[   4]    0100: 2A 2A 2A 2A 2A 2A 2A 2A 2A 2A 2A 2A   menu db '*****************PARKING MANAGEMENT SYSTEM*********************$'
+                2A 2A 2A 2A 2A 50 41 52 4B 49 4E 47 
+                20 4D 41 4E 41 47 45 4D 45 4E 54 20 
+                53 59 53 54 45 4D 2A 2A 2A 2A 2A 2A 
+                2A 2A 2A 2A 2A 2A 2A 2A 2A 2A 2A 2A 
+                2A 2A 2A 24                         
+[   5]    0140: 50 72 65 73 73 20 31 20 66 6F 72 20   menu1 db 'Press 1 for Auto$'
+                41 75 74 6F 24                      
+[   6]    0151: 50 72 65 73 73 20 32 20 66 6F 72 20   menu2 db 'Press 2 for Car$'
+                43 61 72 24                         
+[   7]    0161: 50 72 65 73 73 20 33 20 66 6F 72 20   menu3 db 'Press 3 for Bus$'
+                42 75 73 24                         
+[   8]    0171: 50 72 65 73 73 20 34 20 74 6F 20 53   menu4 db 'Press 4 to Show the Record$'
+                68 6F 77 20 74 68 65 20 52 65 63 6F 
+                72 64 24                            
+[   9]    018C: 50 72 65 73 73 20 35 20 74 6F 20 44   menu5 db 'Press 5 to Delete the Record$'
+                65 6C 65 74 65 20 74 68 65 20 52 65 
+                63 6F 72 64 24                      
+[  10]    01A9: 50 72 65 73 73 20 36 20 74 6F 20 45   menu6 db 'Press 6 to Exit$'
+                78 69 74 24                         
+[  11]    01B9: 50 61 72 6B 69 6E 67 20 49 73 20 46   msg1 db 'Parking Is Full$'
+                75 6C 6C 24                         
+[  12]    01C9: 57 72 6F 6E 67 20 49 6E 70 75 74 24   msg2 db 'Wrong Input$'
+                                                    
+[  13]    01D5: 43 61 72 24                           msg3 db 'Car$'
+[  14]    01D9: 42 75 73 24                           msg4 db 'Bus$'
+[  15]    01DD: 52 65 63 6F 72 64 24                  msg5 db 'Record$'
+[  16]    01E4: 54 68 65 72 65 20 69 73 20 4D 6F 72   msg6 db 'There is More Space in the Parking.$'
+                65 20 53 70 61 63 65 20 69 6E 20 74 
+                68 65 20 50 61 72 6B 69 6E 67 2E 24 
+                                                    
+[  17]    0208: 54 68 65 20 54 6F 74 61 6C 20 41 6D   msg7 db 'The Total Amount is=$'
+                6F 75 6E 74 20 69 73 3D 24          
+[  18]    021D: 54 68 65 20 54 6F 74 61 6C 20 4E 75   msg8 db 'The Total Numbers of Vehicles Parked=$'
+                6D 62 65 72 73 20 6F 66 20 56 65 68 
+                69 63 6C 65 73 20 50 61 72 6B 65 64 
+                3D 24                               
+[  19]    0243: 54 68 65 20 54 6F 74 61 6C 20 4E 75   msg9 db 'The Total Number of Autos Parked=$'
+                6D 62 65 72 20 6F 66 20 41 75 74 6F 
+                73 20 50 61 72 6B 65 64 3D 24       
+[  20]    0265: 54 68 65 20 54 6F 74 61 6C 20 4E 75   msg10 db 'The Total Number of Cars Parked=$'
+                6D 62 65 72 20 6F 66 20 43 61 72 73 
+                20 50 61 72 6B 65 64 3D 24          
+[  21]    0286: 54 68 65 20 54 6F 74 61 6C 20 4E 75   msg11 db 'The Total Number of Buses Parked=$'
+                6D 62 65 72 20 6F 66 20 42 75 73 65 
+                73 20 50 61 72 6B 65 64 3D 24       
+[  22]    02A8: 2A 2A 2A 52 65 63 6F 72 64 20 44 65   msg12 db '***Record Deleted Successfully***$'
+                6C 65 74 65 64 20 53 75 63 63 65 73 
+                73 66 75 6C 6C 79 2A 2A 2A 24       
+[  23]    02CA: 00 00                                 amount dw 0
+[  24]    02CC: 30 00                                 count dw  '0'
+[  25]    02CE: 00 00                                 am1 dw ?
+[  26]    02D0: 00 00                                 am2 dw ?
+[  27]    02D2: 00 00                                 am3 dw ?
+[  28]        :                                       
+[  29]        :                                       
+[  30]    02D4: 30 00                                 r dw '0'
+[  31]    02D6: 30                                    c db '0'
+[  32]    02D7: 30                                    b db '0'
+[  33]        :                                       .code
+[  34]    02E0:                                       main proc
+[  35]    02E0: B8 10 00                              mov ax,@data
+[  36]    02E3: 8E D8                                 mov ds,ax
+[  37]        :                                       
+[  38]        :                                       ;mov cx,count
+[  39]        :                                       
+[  40]        :                                       ;mov cx,0
+[  41]        :                                       
+[  42]    02E5:                                       while_:
+[  43]        :                                       ;Menu
+[  44]    02E5: BA 0A 00                              mov dx,10
+[  45]    02E8: B4 02                                 mov ah,2
+[  46]    02EA: CD 21                                 int 21h
+[  47]    02EC: BA 0D 00                              mov dx,13
+[  48]    02EF: B4 02                                 mov ah,2
+[  49]    02F1: CD 21                                 int 21h
+[  50]        :                                       
+[  51]        :                                       
+[  52]    02F3: BA 00 00                              mov dx,offset menu
+[  53]    02F6: B4 09                                 mov ah,9
+[  54]    02F8: CD 21                                 int 21h
+[  55]        :                                       
+[  56]    02FA: BA 0A 00                              mov dx,10
+[  57]    02FD: B4 02                                 mov ah,2
+[  58]    02FF: CD 21                                 int 21h
+[  59]    0301: BA 0D 00                              mov dx,13
+[  60]    0304: B4 02                                 mov ah,2
+[  61]    0306: CD 21                                 int 21h
+[  62]        :                                       
+[  63]        :                                       
+[  64]    0308: BA 40 00                              mov dx,offset menu1
+[  65]    030B: B4 09                                 mov ah,9
+[  66]    030D: CD 21                                 int 21h
+[  67]        :                                       
+[  68]    030F: BA 0A 00                              mov dx,10
+[  69]    0312: B4 02                                 mov ah,2
+[  70]    0314: CD 21                                 int 21h
+[  71]    0316: BA 0D 00                              mov dx,13
+[  72]    0319: B4 02                                 mov ah,2
+[  73]    031B: CD 21                                 int 21h
+[  74]        :                                       
+[  75]        :                                       
+[  76]    031D: BA 51 00                              mov dx,offset menu2
+[  77]    0320: B4 09                                 mov ah,9
+[  78]    0322: CD 21                                 int 21h
+[  79]        :                                       
+[  80]    0324: BA 0A 00                              mov dx,10
+[  81]    0327: B4 02                                 mov ah,2
+[  82]    0329: CD 21                                 int 21h
+[  83]    032B: BA 0D 00                              mov dx,13
+[  84]    032E: B4 02                                 mov ah,2
+[  85]    0330: CD 21                                 int 21h
+[  86]        :                                       
+[  87]        :                                       
+[  88]    0332: BA 61 00                              mov dx,offset menu3
+[  89]    0335: B4 09                                 mov ah,9
+[  90]    0337: CD 21                                 int 21h
+[  91]    0339: BA 0A 00                              mov dx,10
+[  92]    033C: B4 02                                 mov ah,2
+[  93]    033E: CD 21                                 int 21h
+[  94]    0340: BA 0D 00                              mov dx,13
+[  95]    0343: B4 02                                 mov ah,2
+[  96]    0345: CD 21                                 int 21h
+[  97]        :                                       
+[  98]        :                                       
+[  99]    0347: BA 71 00                              mov dx,offset menu4
+[ 100]    034A: B4 09                                 mov ah,9
+[ 101]    034C: CD 21                                 int 21h
+[ 102]    034E: BA 0A 00                              mov dx,10
+[ 103]    0351: B4 02                                 mov ah,2
+[ 104]    0353: CD 21                                 int 21h
+[ 105]    0355: BA 0D 00                              mov dx,13
+[ 106]    0358: B4 02                                 mov ah,2
+[ 107]    035A: CD 21                                 int 21h
+[ 108]        :                                       
+[ 109]        :                                       
+[ 110]        :                                       
+[ 111]    035C: BA 8C 00                              mov dx,offset menu5
+[ 112]    035F: B4 09                                 mov ah,9
+[ 113]    0361: CD 21                                 int 21h
+[ 114]    0363: BA 0A 00                              mov dx,10
+[ 115]    0366: B4 02                                 mov ah,2
+[ 116]    0368: CD 21                                 int 21h
+[ 117]    036A: BA 0D 00                              mov dx,13
+[ 118]    036D: B4 02                                 mov ah,2
+[ 119]    036F: CD 21                                 int 21h
+[ 120]        :                                       
+[ 121]        :                                       
+[ 122]    0371: BA A9 00                              mov dx,offset menu6
+[ 123]    0374: B4 09                                 mov ah,9
+[ 124]    0376: CD 21                                 int 21h
+[ 125]    0378: BA 0A 00                              mov dx,10
+[ 126]    037B: B4 02                                 mov ah,2
+[ 127]    037D: CD 21                                 int 21h
+[ 128]    037F: BA 0D 00                              mov dx,13
+[ 129]    0382: B4 02                                 mov ah,2
+[ 130]    0384: CD 21                                 int 21h
+[ 131]        :                                       
+[ 132]        :                                       
+[ 133]        :                                       
+[ 134]        :                                       
+[ 135]        :                                       ;userinput
+[ 136]        :                                       
+[ 137]    0386: B4 01                                 mov ah,1
+[ 138]    0388: CD 21                                 int 21h
+[ 139]    038A: 8A D8                                 mov bl,al
+[ 140]    038C: BA 0A 00                              mov dx,10
+[ 141]    038F: B4 02                                 mov ah,2
+[ 142]    0391: CD 21                                 int 21h
+[ 143]    0393: BA 0D 00                              mov dx,13
+[ 144]    0396: B4 02                                 mov ah,2
+[ 145]    0398: CD 21                                 int 21h
+[ 146]        :                                       
+[ 147]        :                                       ;now compare
+[ 148]    039A: 8A C3                                 mov al,bl
+[ 149]    039C: 3C 31                                 cmp al,'1'
+[ 150]    039E: 74 2C                                 je auot
+[ 151]    03A0: 3C 32                                 cmp al,'2'
+[ 152]    03A2: 74 2B                                 je car
+[ 153]    03A4: 3C 33                                 cmp al,'3'
+[ 154]    03A6: 74 30                                 je bus
+[ 155]    03A8: 3C 34                                 cmp al,'4'
+[ 156]    03AA: 74 26                                 je rec
+[ 157]    03AC: 3C 35                                 cmp al,'5'
+[ 158]    03AE: 74 25                                 je del
+[ 159]    03B0: 3C 36                                 cmp al,'6'
+[ 160]    03B2: 74 27                                 je end_
+[ 161]        :                                       
+[ 162]        :                                       
+[ 163]    03B4: BA C9 00                              mov dx,offset msg2
+[ 164]    03B7: B4 09                                 mov ah,9
+[ 165]    03B9: CD 21                                 int 21h
+[ 166]        :                                       
+[ 167]    03BB: BA 0A 00                              mov dx,10
+[ 168]    03BE: B4 02                                 mov ah,2
+[ 169]    03C0: CD 21                                 int 21h
+[ 170]    03C2: BA 0D 00                              mov dx,13
+[ 171]    03C5: B4 02                                 mov ah,2
+[ 172]    03C7: CD 21                                 int 21h
+[ 173]    03C9: E9 19 FF                              jmp while_
+[ 174]        :                                       
+[ 175]    03CC:                                       auot:
+[ 176]    03CC: E8 10 00                              call auto
+[ 177]        :                                       
+[ 178]        :                                       
+[ 179]    03CF:                                       car:
+[ 180]    03CF: E8 55 00                              call caar
+[ 181]        :                                       
+[ 182]        :                                       
+[ 183]    03D2:                                       rec:
+[ 184]    03D2: E8 E5 00                              call recrd
+[ 185]        :                                       
+[ 186]        :                                       
+[ 187]    03D5:                                       del:
+[ 188]    03D5: E8 85 01                              call delt
+[ 189]        :                                       
+[ 190]        :                                       
+[ 191]    03D8:                                       bus:
+[ 192]    03D8: E8 95 00                              call buss
+[ 193]        :                                       
+[ 194]        :                                       
+[ 195]        :                                       
+[ 196]    03DB:                                       end_:
+[ 197]    03DB: B4 4C                                 mov ah,4ch
+[ 198]    03DD: CD 21                                 int 21h
+[ 199]        :                                       
+[ 200]        :                                       main endp
+[ 201]        :                                       
+[ 202]        :                                       
+[ 203]        :                                       
+[ 204]        :                                       
+[ 205]        :                                       
+[ 206]    03DF:                                       auto proc
+[ 207]    03DF: 83 3E CC 01 38                        cmp count,'8'
+[ 208]    03E4: 7E 0C                                 jle auot1
+[ 209]    03E6: BA B9 00                              mov dx,offset msg1
+[ 210]    03E9: B4 09                                 mov ah,9
+[ 211]    03EB: CD 21                                 int 21h
+[ 212]    03ED: E9 F5 FE                              jmp while_
+[ 213]    03F0: EB E9                                 jmp end_
+[ 214]        :                                       
+[ 215]    03F2:                                       auot1:
+[ 216]    03F2: B8 C8 00                              mov ax,200
+[ 217]    03F5: 01 06 CA 01                           add amount, ax
+[ 218]    03F9: BA 00 00                              mov dx,0 ; remainder is 0
+[ 219]    03FC: BB 0A 00                              mov bx,10
+[ 220]    03FF: B9 00 00                              mov cx,0
+[ 221]    0402:                                       l2:
+[ 222]    0402: F7 F3                                 div bx
+[ 223]    0404: 52                                    push dx
+[ 224]    0405: BA 00 00                              mov dx,0
+[ 225]    0408: B4 00                                 mov ah,0
+[ 226]    040A: 41                                    inc cx
+[ 227]    040B: 3D 00 00                              cmp ax,0
+[ 228]    040E: 75 F2                                 jne l2
+[ 229]        :                                       
+[ 230]    0410:                                       l3:
+[ 231]    0410: 5A                                    pop dx
+[ 232]    0411: 83 C2 30                              add dx,48
+[ 233]    0414: B4 02                                 mov ah,2
+[ 234]    0416: CD 21                                 int 21h
+[ 235]    0418: E2 F6                                 loop l3
+[ 236]        :                                       ;mov am1,dx
+[ 237]    041A: FF 06 CC 01                           inc count
+[ 238]        :                                       ;mov dx,count
+[ 239]    041E: FF 06 D4 01                           inc r
+[ 240]        :                                       
+[ 241]    0422: E9 C0 FE                              jmp while_
+[ 242]    0425: EB B4                                 jmp end_
+[ 243]        :                                       
+[ 244]        :                                       
+[ 245]    0427:                                       caar proc
+[ 246]    0427: 83 3E CC 01 38                        cmp count,'8'
+[ 247]    042C: 7E 0C                                 jle car1
+[ 248]    042E: BA B9 00                              mov dx,offset msg1
+[ 249]    0431: B4 09                                 mov ah,9
+[ 250]    0433: CD 21                                 int 21h
+[ 251]    0435: E9 AD FE                              jmp while_
+[ 252]    0438: EB A1                                 jmp end_
+[ 253]        :                                       
+[ 254]    043A:                                       car1:
+[ 255]    043A: B8 2C 01                              mov ax,300
+[ 256]    043D: 01 06 CA 01                           add amount, ax
+[ 257]    0441: BA 00 00                              mov dx,0
+[ 258]    0444: BB 0A 00                              mov bx,10
+[ 259]    0447: B9 00 00                              mov cx,0
+[ 260]    044A:                                       l22:
+[ 261]    044A: F7 F3                                 div bx
+[ 262]    044C: 52                                    push dx
+[ 263]    044D: BA 00 00                              mov dx,0
+[ 264]    0450: B4 00                                 mov ah,0
+[ 265]    0452: 41                                    inc cx
+[ 266]    0453: 3D 00 00                              cmp ax,0
+[ 267]    0456: 75 F2                                 jne l22
+[ 268]        :                                       
+[ 269]    0458:                                       l33:
+[ 270]    0458: 5A                                    pop dx
+[ 271]    0459: 83 C2 30                              add dx,48
+[ 272]    045C: B4 02                                 mov ah,2
+[ 273]    045E: CD 21                                 int 21h
+[ 274]    0460: E2 F6                                 loop l33
+[ 275]        :                                       
+[ 276]        :                                       ;mov am2,amount
+[ 277]        :                                       
+[ 278]    0462: FF 06 CC 01                           inc count
+[ 279]    0466: FE 06 D6 01                           inc c
+[ 280]    046A: E9 78 FE                              jmp while_
+[ 281]    046D: E9 6B FF                              jmp end_
+[ 282]        :                                       
+[ 283]        :                                       
+[ 284]        :                                       
+[ 285]        :                                       
+[ 286]    0470:                                       buss proc
+[ 287]    0470: 83 3E CC 01 38                        cmp count,'8'
+[ 288]    0475: 7E 0D                                 jle bus1
+[ 289]    0477: BA B9 00                              mov dx,offset msg1
+[ 290]    047A: B4 09                                 mov ah,9
+[ 291]    047C: CD 21                                 int 21h
+[ 292]    047E: E9 64 FE                              jmp while_
+[ 293]    0481: E9 57 FF                              jmp end_
+[ 294]        :                                       
+[ 295]    0484:                                       bus1:
+[ 296]    0484: B8 90 01                              mov ax,400
+[ 297]    0487: 01 06 CA 01                           add amount, ax
+[ 298]    048B: BA 00 00                              mov dx,0
+[ 299]    048E: BB 0A 00                              mov bx,10
+[ 300]    0491: B9 00 00                              mov cx,0
+[ 301]    0494:                                       l222:
+[ 302]    0494: F7 F3                                 div bx
+[ 303]    0496: 52                                    push dx
+[ 304]    0497: BA 00 00                              mov dx,0
+[ 305]    049A: B4 00                                 mov ah,0
+[ 306]    049C: 41                                    inc cx
+[ 307]    049D: 3D 00 00                              cmp ax,0
+[ 308]    04A0: 75 F2                                 jne l222
+[ 309]        :                                       
+[ 310]    04A2:                                       l333:
+[ 311]    04A2: 5A                                    pop dx
+[ 312]    04A3: 83 C2 30                              add dx,48
+[ 313]    04A6: B4 02                                 mov ah,2
+[ 314]    04A8: CD 21                                 int 21h
+[ 315]    04AA: E2 F6                                 loop l333
+[ 316]        :                                       ;mov am3,amount
+[ 317]        :                                       
+[ 318]    04AC: FF 06 CC 01                           inc count
+[ 319]    04B0: FE 06 D7 01                           inc b
+[ 320]    04B4: E9 2E FE                              jmp while_
+[ 321]    04B7: E9 21 FF                              jmp end_
+[ 322]        :                                       
+[ 323]        :                                       
+[ 324]    04BA:                                       recrd proc
+[ 325]    04BA: BA 08 01                              mov dx,offset msg7
+[ 326]    04BD: B4 09                                 mov ah,9
+[ 327]    04BF: CD 21                                 int 21h
+[ 328]        :                                       
+[ 329]        :                                       
+[ 330]        :                                       ; print here the whole amount
+[ 331]    04C1: A1 CA 01                              mov ax, amount
+[ 332]        :                                       
+[ 333]    04C4: BA 00 00                              mov dx,0
+[ 334]    04C7: BB 0A 00                              mov bx,10
+[ 335]    04CA: B9 00 00                              mov cx,0
+[ 336]    04CD:                                       totalpush:
+[ 337]    04CD: F7 F3                                 div bx
+[ 338]    04CF: 52                                    push dx
+[ 339]    04D0: BA 00 00                              mov dx,0
+[ 340]        :                                       ;  mov ah,0
+[ 341]    04D3: 41                                    inc cx
+[ 342]    04D4: 3D 00 00                              cmp ax,0
+[ 343]    04D7: 75 F4                                 jne totalpush
+[ 344]        :                                       
+[ 345]    04D9:                                       totalprint:
+[ 346]    04D9: 5A                                    pop dx
+[ 347]    04DA: 83 C2 30                              add dx,48
+[ 348]    04DD: B4 02                                 mov ah,2
+[ 349]    04DF: CD 21                                 int 21h
+[ 350]    04E1: E2 F6                                 loop totalprint
+[ 351]        :                                       
+[ 352]        :                                       
+[ 353]        :                                       
+[ 354]        :                                       
+[ 355]    04E3: BA 0A 00                              mov dx,10
+[ 356]    04E6: B4 02                                 mov ah,2
+[ 357]    04E8: CD 21                                 int 21h
+[ 358]    04EA: BA 0D 00                              mov dx,13
+[ 359]    04ED: B4 02                                 mov ah,2
+[ 360]    04EF: CD 21                                 int 21h
+[ 361]        :                                       
+[ 362]        :                                       
+[ 363]        :                                       
+[ 364]        :                                       
+[ 365]        :                                       
+[ 366]        :                                       
+[ 367]        :                                       
+[ 368]    04F1: BA 1D 01                              mov dx,offset msg8
+[ 369]    04F4: B4 09                                 mov ah,9
+[ 370]    04F6: CD 21                                 int 21h
+[ 371]        :                                       
+[ 372]    04F8: 8B 16 CC 01                           mov dx,count
+[ 373]    04FC: B4 02                                 mov ah,2
+[ 374]    04FE: CD 21                                 int 21h
+[ 375]        :                                       
+[ 376]    0500: BA 0A 00                              mov dx,10
+[ 377]    0503: B4 02                                 mov ah,2
+[ 378]    0505: CD 21                                 int 21h
+[ 379]    0507: BA 0D 00                              mov dx,13
+[ 380]    050A: B4 02                                 mov ah,2
+[ 381]    050C: CD 21                                 int 21h
+[ 382]        :                                       
+[ 383]        :                                       
+[ 384]    050E: BA 43 01                              mov dx,offset msg9
+[ 385]    0511: B4 09                                 mov ah,9
+[ 386]    0513: CD 21                                 int 21h
+[ 387]        :                                       
+[ 388]    0515: 8B 16 D4 01                           mov dx,r
+[ 389]    0519: B4 02                                 mov ah,2
+[ 390]    051B: CD 21                                 int 21h
+[ 391]        :                                       
+[ 392]    051D: BA 0A 00                              mov dx,10
+[ 393]    0520: B4 02                                 mov ah,2
+[ 394]    0522: CD 21                                 int 21h
+[ 395]    0524: BA 0D 00                              mov dx,13
+[ 396]    0527: B4 02                                 mov ah,2
+[ 397]    0529: CD 21                                 int 21h
+[ 398]        :                                       
+[ 399]        :                                       
+[ 400]        :                                       
+[ 401]    052B: BA 65 01                              mov dx,offset msg10
+[ 402]    052E: B4 09                                 mov ah,9
+[ 403]    0530: CD 21                                 int 21h
+[ 404]        :                                       
+[ 405]        :                                       
+[ 406]    0532: 8A 16 D6 01                           mov dl,c
+[ 407]    0536: B4 02                                 mov ah,2
+[ 408]    0538: CD 21                                 int 21h
+[ 409]        :                                       
+[ 410]    053A: BA 0A 00                              mov dx,10
+[ 411]    053D: B4 02                                 mov ah,2
+[ 412]    053F: CD 21                                 int 21h
+[ 413]    0541: BA 0D 00                              mov dx,13
+[ 414]    0544: B4 02                                 mov ah,2
+[ 415]    0546: CD 21                                 int 21h
+[ 416]        :                                       
+[ 417]        :                                       
+[ 418]        :                                       
+[ 419]    0548: BA 86 01                              mov dx,offset msg11
+[ 420]    054B: B4 09                                 mov ah,9
+[ 421]    054D: CD 21                                 int 21h
+[ 422]        :                                       
+[ 423]    054F: 8A 16 D7 01                           mov dl,b
+[ 424]    0553: B4 02                                 mov ah,2
+[ 425]    0555: CD 21                                 int 21h
+[ 426]        :                                       
+[ 427]    0557: E9 8B FD                              jmp while_
+[ 428]    055A: E9 7E FE                              jmp end_
+[ 429]        :                                       
+[ 430]        :                                       
+[ 431]    055D:                                       delt proc
+[ 432]    055D: C7 06 D4 01 30 00                     mov r,'0'
+[ 433]    0563: C6 06 D6 01 30                        mov c,'0'
+[ 434]    0568: C6 06 D7 01 30                        mov b,'0'
+[ 435]    056D: C7 06 CA 01 00 00                     mov amount,0
+[ 436]        :                                       ;sub amount,48
+[ 437]    0573: C7 06 CC 01 30 00                     mov count,'0'
+[ 438]    0579: BA A8 01                              mov dx,offset msg12
+[ 439]    057C: B4 09                                 mov ah,9
+[ 440]    057E: CD 21                                 int 21h
+[ 441]        :                                       
+[ 442]    0580: BA 0A 00                              mov dx,10
+[ 443]    0583: B4 02                                 mov ah,2
+[ 444]    0585: CD 21                                 int 21h
+[ 445]    0587: BA 0D 00                              mov dx,13
+[ 446]    058A: B4 02                                 mov ah,2
+[ 447]    058C: CD 21                                 int 21h
+[ 448]        :                                       
+[ 449]        :                                       
+[ 450]        :                                       
+[ 451]        :                                       
+[ 452]    058E: E9 54 FD                              jmp while_
+[ 453]    0591: E9 47 FE                              jmp end_
+[ 454]        :                                       
+[ 455]        :                                       
+[ 456]        :                                       
+[ 457]        :                                       
+[ 458]        :                                       
+[ 459]        :                                       
+[ 460]        :                                       
+[ 461]        :                                       
+[ 462]        :                                       
+[ 463]        :                                       
+[ 464]        :                                       end main
+[ 465]        :                                       
+[ 466]        :                                       
+ 
+===================================================================================================
+ 
+EXE HEADER - bytes from 0000 to 01FF inclusive.
+
+0000: 4D      -   exe signature (M)
+0001: 5A      -   exe signature (Z)
+0002: 94      -   bytes on last page (l.byte)
+0003: 01      -   bytes on last page (h.byte)
+0004: 04      -   512 byte pages in file (l.byte)
+0005: 00      -   512 byte pages in file (h.byte)
+0006: 01      -   relocations (l.byte)
+0007: 00      -   relocations (h.byte)
+0008: 20      -   paragraphs in header (l.byte)
+0009: 00      -   paragraphs in header (h.byte)
+000A: 00      -   minimum memory (l.byte)
+000B: 00      -   minimum memory (h.byte)
+000C: FF      -   maximum memory (l.byte)
+000D: FF      -   maximum memory (h.byte)
+000E: 00      -   SS - stack segment (l.byte)
+000F: 00      -   SS - stack segment (h.byte)
+0010: 00      -   SP - stack pointer (l.byte)
+0011: 01      -   SP - stack pointer (h.byte)
+0012: 8F      -   check sum (l.byte)
+0013: C2      -   check sum (h.byte)
+0014: 00      -   IP - instruction pointer (l.byte)
+0015: 00      -   IP - instruction pointer (h.byte)
+0016: 2E      -   CS - code segment (l.byte)
+0017: 00      -   CS - code segment (h.byte)
+0018: 1E      -   relocation table adress (l.byte)
+0019: 00      -   relocation table adress (h.byte)
+001A: 00      -   overlay number (l.byte)
+001B: 00      -   overlay number (h.byte)
+001C: 01      -   signature (l.byte)
+001D: 00      -   signature (h.byte)
+001E: 01      -   relocation table - offset inside segment (l.byte)
+001F: 00      -   relocation table - offset inside segment (h.byte)
+0020: 2E      -   relocation table - segment anchor (l.byte)
+0021: 00      -   relocation table - segment anchor (h.byte)
+0022 to 01FF  -   reserved relocation area  (00) 
+
+
+
+
+===================================================================================================
