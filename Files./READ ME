@@ -1,0 +1,15 @@
+Hello Guys,
+
+In this folder we have all the requried files to run the Parking Management System using 8086 Assembly Language
+
+Install emu 8086  emulator to run the program and then open the file 
+
+using 8086 emulator and then run the program in the emu
+
+Now, you can watch the outputs as given in the file(as scrren shots have been uploaded)
+
+Finally the program runs 
+
+Note: Here, In the program I've selected only a few number of parking spaces if you want 
+
+you can increase the parking space.
